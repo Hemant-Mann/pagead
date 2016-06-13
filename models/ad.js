@@ -16,8 +16,9 @@ var adSchema = new Schema({
     start: Date,
     end: Date,
     cpc: Number,
-    visibility: Number,
+    visibility: Boolean,
     created: Date,
+    live: Boolean,
     modified: { type: Date, default: Date.now }
 }, { collection: 'ads' });
 

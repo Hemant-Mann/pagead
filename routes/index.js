@@ -5,7 +5,13 @@ var Category = require('../models/category');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-	Ad.find({}, function (err, ads) {
+	var t = Date.now();
+	Ad.find({
+		live: true,
+		visibility: true,
+		start: { $lte: t },
+		end: { $gte: t } 
+	}, function (err, ads) {
 		if (err) {
 			return next((new Error('Something went wrong!!')));
 		}
@@ -13,8 +19,8 @@ router.get('/', function (req, res, next) {
 		var min = 0, max = ads.length - 1;
 		var index = Math.floor(Math.random() * (max - min + 1)) + min;
 
-		var ad = ads[index];
-		var categories = JSON.parse(ad.category);
+		var ad = ads[index] || {};
+		var categories = JSON.parse(ad.category || "[]");
 
 		var str = [];
 		Category.find({ id: { $in: categories }}, function (err, cat) {
@@ -26,7 +32,7 @@ router.get('/', function (req, res, next) {
 				_user_id: ad.user_id,
 				_url: ad.url,
 				_title: ad.title,
-				_image: ad.image,
+				_image: 'http://static.vnative.com/uploads/images/' + ad.image,
 				_description: ad.description,
 				_id: ad.id,
 				_category: str.join()
