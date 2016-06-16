@@ -50,7 +50,7 @@ router.get('/', function (req, res, next) {
 					_title: ad.title,
 					_image: 'http://static.vnative.com/uploads/images/' + ad.image,
 					_description: ad.description,
-					_id: ad.id,
+					_id: ad._id,
 					_category: str.join()
 				};
 
