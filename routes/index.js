@@ -51,8 +51,16 @@ router.get('/', function (req, res, next) {
 					_image: 'http://static.vnative.com/uploads/images/' + ad.image,
 					_description: ad.description,
 					_id: ad._id,
+					_type: ad.type,
 					_category: str.join()
 				};
+
+				if (ad.video && ad.video.length > 0) {
+					adObj._video = ad.video;
+					adObj._video = adObj._video.map(function (val) {
+						return 'http://static.vnative.com/uploads/videos/' + val;
+					});
+				}
 
 				var cb = req.query.callback;
 

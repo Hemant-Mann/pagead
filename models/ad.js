@@ -10,6 +10,8 @@ var adSchema = new Schema({
     title: String,
     description: String,
     image: String,
+    video: [],
+    type: String,
     category: String,
     budget: Number,
     frequency: Number,
