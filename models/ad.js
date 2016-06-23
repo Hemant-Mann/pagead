@@ -21,6 +21,7 @@ var adSchema = new Schema({
     visibility: Boolean,
     created: Date,
     live: Boolean,
+    privacy: String,
     modified: { type: Date, default: Date.now }
 }, { collection: 'ads' });
 
