@@ -17,7 +17,7 @@ function sendAd(find, req, res) {
 		var index = Math.floor(Math.random() * (max - min + 1)) + min;
 
 		var ad = ads[index] || {};
-		var categories = JSON.parse(ad.category || "[]");
+		var categories = ad.category || [];
 
 		var str = [];
 		Category.find({ id: { $in: categories }}, function (err, cat) {
@@ -62,15 +62,7 @@ router.get('/', function (req, res, next) {
 		privacy: 'public'
 	};
 
-	var uid = null;
-	if (req.query.uid) {	// If uid is sent in request
-		uid = new Buffer(req.query.uid, 'base64');
-		if (isNaN(uid)) {
-			return res.status(400).json({ error: "Sorry, We were unable to process your request!" });
-		} else {
-			uid = Number(uid);
-		}
-	}
+	var uid = req.query.uid;
 	// @todo there must be some way to check whether the user asking for the AD
 	// with the given params is a valid user
 

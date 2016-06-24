@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 // create a schema
 var bSchema = new Schema({
 	url: String,
-    user_id: Number,
+    user_id: Schema.Types.ObjectId,
     live: Number,
     modified: Date
 }, { collection: 'blockedurls' });

@@ -3,10 +3,10 @@ var Schema = mongoose.Schema;
 
 // create a schema
 var aduSchema = new Schema({
-    user_id: Number,
+    user_id: Schema.Types.ObjectId,
     category: String,
     name: String,
-    type: String,
+    type: [],
     created: Date,
     privacy: String,
     modified: { type: Date, default: Date.now }
