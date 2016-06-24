@@ -18,10 +18,10 @@ aduSchema.statics.process = function (opts, cb) {
     	return cb(null, opts.find);
     }
 
-    self.findOne({ _id: opts.aduid }, function (err, adunit) {
-    	if (adunit.user_id != opts.uid) {  // User is doing something fishy
-    		return cb(true, {});
-    	}
+    self.findOne({ _id: opts.aduid, user_id: opts.uid }, function (err, adunit) {
+    	if (!adunit) {
+            return cb(true, null);
+        }
 
     	var find = opts.find; // "local" then find ads only by this user
     	if (adunit.privacy == 'local') {

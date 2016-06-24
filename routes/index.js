@@ -10,12 +10,11 @@ var AdUnit = require('../models/adunit');
 function sendAd(find, req, res) {
 	Ad.find(find, function (err, ads) {
 		if (err) {
-			return res.status.(500).json({ error: "Internal Server Error" });
+			return res.status(500).json({ error: "Internal Server Error" });
 		}
 
 		var min = 0, max = ads.length - 1;
 		var index = Math.floor(Math.random() * (max - min + 1)) + min;
-
 		var ad = ads[index] || {};
 		var categories = ad.category || [];
 
@@ -80,9 +79,9 @@ router.get('/', function (req, res, next) {
 		}
 		
 		// Check whether The Adunit wants 'global' ads or 'local' ads
-		Adunit.process({ aduid: req.query.aduid, uid: uid, find: find }, function (err, find) {
+		AdUnit.process({ aduid: req.query.aduid, uid: uid, find: find }, function (err, find) {
 			if (err) {
-				return res.status.(400).json({ error: "Sorry, We were unable to process your request!" });
+				return res.status(400).json({ error: "Sorry, We were unable to process your request!" });
 			}
 
 			sendAd(find, req, res);
