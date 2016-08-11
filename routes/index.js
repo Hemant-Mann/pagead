@@ -55,10 +55,7 @@ router.get('/', function (req, res, next) {
 	var t = Date.now();
 	var find = {
 		live: true,
-		visibility: true,
-		start: { $lte: t },
-		end: { $gte: t },
-		privacy: 'public'
+		type: 'article'
 	};
 
 	var uid = req.query.uid;
@@ -79,13 +76,12 @@ router.get('/', function (req, res, next) {
 		}
 		
 		// Check whether The Adunit wants 'global' ads or 'local' ads
-		AdUnit.process({ aduid: req.query.aduid, uid: uid, find: find }, function (err, find) {
+		/*AdUnit.process({ aduid: req.query.aduid, uid: uid, find: find }, function (err, find) {
 			if (err) {
 				return res.status(400).json({ error: "Sorry, We were unable to process your request!" });
 			}
-
-			sendAd(find, req, res);
-		});
+		});*/
+		sendAd(find, req, res);
 	});
 });
 

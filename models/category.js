@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 // create a schema
 var catSchema = new Schema({
-    id: Number,
+    org_id: Schema.Types.ObjectId,
     name: String,
     live: Number,
     created: Date
