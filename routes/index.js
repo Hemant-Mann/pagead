@@ -55,31 +55,12 @@ function sendAd(find, req, res) {
 
 router.get('/', function (req, res, next) {
 	var t = Date.now(), ua = req.headers['user-agent'],
-		deviceTypes = ['ALL', device],
 		find = { live: true };
 
 	// Also find AD based on device type
-	var device = Utils.device(req);
-	switch (device) {
-		case 'mobile':
-			if (ua.match(/iphone/i)) {
-				deviceTypes.push('iphone');
-			} else if (ua.match(/windows/i)) {
-				deviceTypes.push('windows');
-			} else {
-				deviceTypes.push('android');
-			}
-			break;
-
-		case 'tablet':
-			if (ua.match(/ipad/i)) {
-				deviceTypes.push('iphone');
-			} else {
-				deviceTypes.push('android');
-			}
-			break;
-	}
-	find.device = { $in: deviceTypes };
+	var device = Utils.device(req),
+		deviceQuery = Ad.deviceQuery(ua, device);
+	find.device = { $in: deviceQuery };
 
 	var uid = req.query.uid;
 	User.findOne({ _id: uid }, 'org_id', function (err, u) {
