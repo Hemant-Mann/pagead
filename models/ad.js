@@ -12,6 +12,7 @@ var adSchema = new Schema({
     category: [Schema.Types.ObjectId],
     type: String,
     category: [],
+    device: [],
     created: Date,
     live: Boolean,
     modified: { type: Date, default: Date.now }

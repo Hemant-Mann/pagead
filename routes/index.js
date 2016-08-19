@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var config = require('../config');
+var Utils = require('../utils');
+
 // models
 var Ad = require('../models/ad');
 var Category = require('../models/category');
@@ -52,13 +54,35 @@ function sendAd(find, req, res) {
 }
 
 router.get('/', function (req, res, next) {
-	var t = Date.now();
-	var find = {
-		live: true
-	};
+	var t = Date.now(), ua = req.headers['user-agent'],
+		deviceTypes = ['ALL', device],
+		find = { live: true };
+
+	// Also find AD based on device type
+	var device = Utils.device(req);
+	switch (device) {
+		case 'mobile':
+			if (ua.match(/iphone/i)) {
+				deviceTypes.push('iphone');
+			} else if (ua.match(/windows/i)) {
+				deviceTypes.push('windows');
+			} else {
+				deviceTypes.push('android');
+			}
+			break;
+
+		case 'tablet':
+			if (ua.match(/ipad/i)) {
+				deviceTypes.push('iphone');
+			} else {
+				deviceTypes.push('android');
+			}
+			break;
+	}
+	find.device = { $in: deviceTypes };
 
 	var uid = req.query.uid;
-	User.findOne({_id: uid}, 'org_id', function (err, u) {
+	User.findOne({ _id: uid }, 'org_id', function (err, u) {
 		if (err || !u) {
 			var cb = req.query.callback;
 
