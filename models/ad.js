@@ -19,7 +19,7 @@ var adSchema = new Schema({
 }, { collection: 'ads' });
 
 adSchema.statics.deviceQuery = function (ua, device) {
-    var deviceTypes = ['ALL'];
+    var deviceTypes = ['ALL', 'all'];
     switch (device) {
         case 'mobile':
             if (ua.match(/iphone/i)) {
