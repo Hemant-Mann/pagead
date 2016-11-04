@@ -2,11 +2,11 @@ var express = require('express');
 var router = express.Router();
 var config = require('../config');
 var Utils = require('../utils');
+var request = require('request');
 
 // models
 var Ad = require('../models/ad');
 var Category = require('../models/category');
-var BlockedUrl = require('../models/blocked');
 var User = require('../models/user');
 
 function sendAd(find, req, res) {
@@ -54,13 +54,21 @@ function sendAd(find, req, res) {
 }
 
 router.get('/', function (req, res, next) {
-	var t = Date.now(), ua = req.headers['user-agent'],
-		find = { live: true };
+	var t = Date.now(), ua = req.headers['user-agent'];
 
 	// Also find AD based on device type
 	var device = Utils.device(req),
 		deviceQuery = Ad.deviceQuery(ua, device);
-	find.device = { $in: deviceQuery };
+
+	var find = {
+		device: deviceQuery[0],
+		link: req.get('Referrer'),
+		live: true
+	};
+
+	if (find.link.match(/likelovequotes\.com/i)) {
+		return res.send("callback(" + JSON.stringify({ error: "Invalid Request" }) + ")");
+	}
 
 	var uid = req.query.uid;
 	User.findOne({ _id: uid }, 'org_id', function (err, u) {
@@ -69,28 +77,41 @@ router.get('/', function (req, res, next) {
 
 			return res.send(cb + "(" + JSON.stringify({ error: "Invalid Request" }) + ")");
 		};
-		find.org_id = u.org_id;
+		find.org_id = String(u.org_id);
 
-		sendAd(find, req, res);
+		// recommendation
+		request({
+			url: 'http://' + config.serverIp + '/vNative',
+			method: 'GET',
+			qs: find
+		}, function (err, response, body) {
+			var ids = [];
+
+			try {
+				if (err) throw new Error("Invalid recommendation!!");
+				
+				var data = JSON.parse(body);
+				var ads = data['ads'];
+
+				ads.forEach(function (obj) {
+					ids.push(obj._id);
+				});
+
+				if (ids.length === 0) {
+					throw new Error("Invalid recommendation!!");
+				}
+				ids.splice(-1); // coz last id is not that relevant
+
+				sendAd({_id: {$in: ids}}, req, res);
+			} catch (e) {
+				var device = find.device;
+				find.device = {$in: ['all', 'ALL', device]};
+				delete find.link;
+
+				sendAd(find, req, res);
+			}
+		});
 	});
-
-	// @todo there must be some way to check whether the user asking for the AD
-	// with the given params is a valid user
-
-	/*BlockedUrl.find({ uid: uid }, function (err, r) {
-		var urls = [];
-		if (!err && r) {
-			r.forEach(function (el) {
-				urls.push(el.url);
-			});
-		}
-
-		// @todo convert this query to match for regex of all these websites
-		if (urls.length > 0) {
-			find.url = { $nin: urls };
-		}
-		
-	});*/
 });
 
 module.exports = router;
